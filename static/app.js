@@ -6,7 +6,6 @@ function generateOutput(res, refs = {}) {
         container.appendChild(el);
 
         for (const d of res.detected) {
-            console.log(d);
             if (d === "image") {
                 const imgEl = document.createElement("img");
                 imgEl.src = res.raw;
@@ -36,7 +35,13 @@ function generateOutput(res, refs = {}) {
         });
         container.appendChild(button);
         return container;
+    } else if (res.type === "unknown") {
+        const container = document.createElement("div");
+        const el = document.createTextNode(`${res.value}\n`);
+        container.appendChild(el);
+        return container;
     }
+    console.error("unknown value type");
 }
 
 document.getElementById("eval-input").addEventListener("keyup", (e) => {

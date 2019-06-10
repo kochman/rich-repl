@@ -6,16 +6,14 @@ class Serializer:
         pass
 
     def serialize(self, obj):
-        """Serialize an arbitrary object, but specifically support circular dictionaries.
-        
-        The "primitive" term is somewhat misleading since it is actually anything that isn't
-        special-cased (for now, that's anything that's not a dictionary).
-        """
+        """Serialize an arbitrary object, but specifically support circular dictionaries."""
 
         # is this a dictionary?
         if isinstance(obj, dict):
             return self.serialize_dict(obj)
-        return self.serialize_primitive(obj)
+        if isinstance(obj, (str, int, float, bool, tuple)):
+            return self.serialize_primitive(obj)
+        return self.serialize_unknown(obj)
 
     def serialize_dict(self, d, seen={}):
         s = {"type": "dict", "value": repr(d), "values": [], "id": str(uuid.uuid4())}
@@ -40,3 +38,6 @@ class Serializer:
 
     def serialize_primitive(self, p):
         return {"type": "primitive", "value": repr(p), "raw": p}
+
+    def serialize_unknown(self, p):
+        return {"type": "unknown", "value": repr(p)}
