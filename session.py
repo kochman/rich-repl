@@ -1,5 +1,9 @@
 import uuid
 
+from serializer import Serializer
+
+serializer = Serializer()
+
 
 class Session:
     def __init__(self):
@@ -8,8 +12,15 @@ class Session:
         self.locals = {}
 
     def evaluate(self, new_input):
-        output = eval(new_input, self.globals, self.locals)
-        return output
+        """Returns tuple of output value and whether or not the statement evaluated to a value."""
+        try:
+            output = eval(new_input, self.globals, self.locals)
+            return (output, True)
+        except SyntaxError as e:
+            exec(new_input, self.globals, self.locals)
+            return (None, False)
+        except Exception as e:
+            return str(e), True
 
 
 class SessionManager:
@@ -23,4 +34,7 @@ class SessionManager:
 
     def eval(self, session_id, new_input):
         s = self.sessions[session_id]
-        return s.evaluate(new_input)
+        output = s.evaluate(new_input)
+        if output[1]:
+            return serializer.serialize(output[0])
+        return "temp"

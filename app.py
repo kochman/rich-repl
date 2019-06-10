@@ -1,4 +1,4 @@
-from flask import Flask, request, render_template
+from flask import Flask, request, render_template, jsonify
 
 from session import SessionManager
 
@@ -19,7 +19,7 @@ def evaluate():
     s_id = j["session_id"]
     new_input = j["input"]
     output = sm.eval(s_id, new_input)
-    return output
+    return jsonify(output)
 
 
 if __name__ == "__main__":
