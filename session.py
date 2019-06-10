@@ -1,7 +1,9 @@
 import uuid
 
+from detector import Detector
 from serializer import Serializer
 
+detector = Detector()
 serializer = Serializer()
 
 
@@ -36,5 +38,7 @@ class SessionManager:
         s = self.sessions[session_id]
         output = s.evaluate(new_input)
         if output[1]:
-            return serializer.serialize(output[0])
+            serialized = serializer.serialize(output[0])
+            detector.detect(serialized)
+            return serialized
         return "temp"
