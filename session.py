@@ -41,4 +41,4 @@ class SessionManager:
             serialized = serializer.serialize(output[0])
             detector.detect(serialized)
             return serialized
-        return "temp"
+        return None

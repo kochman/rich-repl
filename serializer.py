@@ -6,7 +6,11 @@ class Serializer:
         pass
 
     def serialize(self, obj):
-        """Serialize an arbitrary object, but specifically support circular dictionaries."""
+        """Serialize an arbitrary object, but specifically support circular dictionaries.
+        
+        The "primitive" term is somewhat misleading since it is actually anything that isn't
+        special-cased (for now, that's anything that's not a dictionary).
+        """
 
         # is this a dictionary?
         if isinstance(obj, dict):
@@ -14,7 +18,7 @@ class Serializer:
         return self.serialize_primitive(obj)
 
     def serialize_dict(self, d, seen={}):
-        s = {"type": "dict", "values": [], "id": str(uuid.uuid4())}
+        s = {"type": "dict", "value": repr(d), "values": [], "id": str(uuid.uuid4())}
 
         # store this dictionary's ID first
         seen[id(d)] = s["id"]
@@ -22,16 +26,17 @@ class Serializer:
         for k, v in d.items():
             if isinstance(v, dict):
                 if id(v) in seen:
-                    val = {"type": "reference", "value": seen[id(v)], "key": k}
+                    val = {"type": "reference", "value": seen[id(v)], "key": repr(k)}
                 else:
                     seen[id(v)] = s["id"]
                     val = self.serialize_dict(v, seen)
+                    val["key"] = repr(k)
                 s["values"].append(val)
             else:
                 val = self.serialize(v)
-                val["key"] = k
+                val["key"] = repr(k)
                 s["values"].append(val)
         return s
 
     def serialize_primitive(self, p):
-        return {"type": "primitive", "value": p}
+        return {"type": "primitive", "value": repr(p), "raw": p}
