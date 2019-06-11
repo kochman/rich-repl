@@ -1,4 +1,5 @@
 function generateOutput(res, refs = {}) {
+    console.log(res);
     refs[res.id] = res
     if (res.type === "primitive") {
         const container = document.createElement("div");
@@ -30,7 +31,8 @@ function generateOutput(res, refs = {}) {
         const container = document.createElement("span");
         const button = document.createElement("button");
         button.innerHTML = "&darr;";
-        button.addEventListener("click", (e) => {
+        button.addEventListener("click", () => {
+            console.log("hi");
             container.appendChild(generateOutput(refs[res.value], refs));
         });
         container.appendChild(button);
